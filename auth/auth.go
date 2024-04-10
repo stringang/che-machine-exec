@@ -13,12 +13,8 @@
 package auth
 
 import (
-	"net/http"
-
 	"github.com/eclipse-che/che-machine-exec/cfg"
-	restUtil "github.com/eclipse-che/che-machine-exec/common/rest"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 func IsEnabled() bool {
@@ -29,16 +25,6 @@ func Authenticate(c *gin.Context) (string, error) {
 	token, err := extractToken(c)
 	if err != nil {
 		return "", err
-	}
-
-	userID, err := getCurrentUserID(token)
-	if err != nil {
-		logrus.Error("Failed to verify user. Cause: ", err.Error())
-		return "", restUtil.NewError(http.StatusInternalServerError, "unable to verify user with provided token")
-	}
-
-	if userID != cfg.AuthenticatedUserID {
-		return "", restUtil.NewError(http.StatusForbidden, "the current user is not authorized to use API")
 	}
 
 	return token, nil
